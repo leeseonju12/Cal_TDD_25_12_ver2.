@@ -1,8 +1,15 @@
 package org.example;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class Calc {
 
-    public static int run(String exp) { // 10 + 5 * 2
+    public static int run(String exp) {
+
+        if (!exp.contains(" ")) {
+            return Integer.parseInt(exp);
+        }
 
         boolean needToMulti = exp.contains("*");
         boolean needToPlus = exp.contains("+");
@@ -14,7 +21,39 @@ public class Calc {
         if (needToCompound) {
             String[] bits = exp.split(" \\+ ");
 
-            return Integer.parseInt(bits[0]) + run(bits[1]);
+            // 스트림 활용
+            String newExp = Arrays.stream(bits)
+                    .mapToInt(Calc::run)
+                    .mapToObj(e -> e + "")
+                    .collect(Collectors.joining(" + "));
+//1
+//            StringBuilder sb = new StringBuilder();
+//
+//            for (int i = 0; i < bits.length; i++) {
+//                int result = Calc.run(bits[i]);
+//                sb.append(result);
+//
+//                // 마지막 요소가 아니면 " + " 추가
+//                if (i < bits.length - 1) {
+//                    sb.append(" + ");
+//                }
+//            }
+//
+//            String newExp = sb.toString();
+
+//2
+//            String newExp = "";
+//
+//            for (int i = 0; i < bits.length; i++) {
+//                int result = Calc.run(bits[i]);
+//                newExp += result;
+//
+//                if (i < bits.length - 1) {
+//                    newExp += " + ";
+//                }
+//            }
+
+            return run(newExp);
         }
 
         if (needToPlus) {
@@ -26,7 +65,6 @@ public class Calc {
             }
 
             return sum;
-
         } else if (needToMulti) {
             String[] bits = exp.split(" \\* ");
 
@@ -42,6 +80,5 @@ public class Calc {
 
         throw new RuntimeException("해석 불가 : 올바른 계산식이 아님");
     }
-
 
 }
