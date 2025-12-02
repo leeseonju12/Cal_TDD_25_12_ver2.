@@ -11,22 +11,40 @@ public class Calc {
             return Integer.parseInt(exp);
         }
 
-        boolean needToMulti = exp.contains("*");
-        boolean needToPlus = exp.contains("+");
-
-        boolean needToCompound = needToPlus && needToMulti;
-
+        // 뺄셈을 음수의 덧셈으로 변환
+        // 원래 +가 없었던 수식은 변환 후에도 더하기 연산 부분이 false로 판단됨
+        // 때문에 음수 변환을 연산자 체크 전 수행
         exp = exp.replace("- ", "+ -");
 
+        boolean needToMulti = exp.contains("*");
+        boolean needToPlus = exp.contains("+");
+        boolean parentheses = exp.contains("( )");
+
+        if (parentheses) {
+            String[] bits = exp.split(" \\+ ");
+            int sum = 0;
+
+            for (int i = 0; i < i+1; i++) {
+                sum += Integer.parseInt(bits[i]);
+            }
+
+            return sum;
+        }
+
+        // 곱셈, 덧셈 모두 존재 시 복합 연산으로 판단
+        boolean needToCompound = needToPlus && needToMulti;
+
+        // 복합 연산을 하는 경우, 더하기 기호로 수식 분리
         if (needToCompound) {
             String[] bits = exp.split(" \\+ ");
 
-            // 스트림 활용
-            String newExp = Arrays.stream(bits)
-                    .mapToInt(Calc::run)
-                    .mapToObj(e -> e + "")
-                    .collect(Collectors.joining(" + "));
-//1
+////스트림 활용
+//            String newExp = Arrays.stream(bits)
+//                    .mapToInt(Calc::run)
+//                    .mapToObj(e -> e + "")
+//                    .collect(Collectors.joining(" + "));
+
+////1
 //            StringBuilder sb = new StringBuilder();
 //
 //            for (int i = 0; i < bits.length; i++) {
@@ -42,18 +60,19 @@ public class Calc {
 //            String newExp = sb.toString();
 
 //2
-//            String newExp = "";
-//
-//            for (int i = 0; i < bits.length; i++) {
-//                int result = Calc.run(bits[i]);
-//                newExp += result;
-//
-//                if (i < bits.length - 1) {
-//                    newExp += " + ";
-//                }
-//            }
+            String newExp = "";
 
+            for (int i = 0; i < bits.length; i++) {
+                int result = Calc.run(bits[i]);
+                newExp += result;
+
+                if (i < bits.length - 1) {
+                    newExp += " + ";
+                }
+            }
+//
             return run(newExp);
+            // 재귀 호출로 계산
         }
 
         if (needToPlus) {
@@ -65,7 +84,9 @@ public class Calc {
             }
 
             return sum;
-        } else if (needToMulti) {
+        }
+
+        else if (needToMulti) {
             String[] bits = exp.split(" \\* ");
 
             int sum = 1;
