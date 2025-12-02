@@ -82,7 +82,7 @@ public class CalcTest {
     @Test
     @DisplayName("20 + 10 + 5 * 2 = 40")
     public void test13() {
-        assertThat(Calc.run("10 * 20 + 10 + 5 * 2")).isEqualTo(40);
+        assertThat(Calc.run("20 + 10 + 5 * 2")).isEqualTo(40);
     }
 
     @Test
@@ -96,10 +96,29 @@ public class CalcTest {
 //    public void test15() {
 //        assertThat(Calc.run("((20+20)) + 20")).isEqualTo(60);
 //    }
+
+
+    @Test
+    @DisplayName("3 - 1 = 2")
+    public void test16() {
+        assertThat(Calc.run("3 - 1")).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("(10 + 20) == 30")
+    public void test17() {
+        assertThat(Calc.run("(10 + 20)")).isEqualTo(30);
+    }
 //
 //    @Test
-//    @DisplayName("3 - 1 = 2")
-//    public void test16() {
-//        assertThat(Calc.run("3 - 1")).isEqualTo(2);
+//    @DisplayName("((10 + 20)) == 30")
+//    public void test18() {
+//        assertThat(Calc.run("((10 + 20))")).isEqualTo(30);
+//    }
+//
+//    @Test
+//    @DisplayName("(10+20) * 3 == 90")
+//    public void test19() {
+//        assertThat(Calc.run("(10+20) * 3 == 90")).isEqualTo(90);
 //    }
 }

@@ -7,74 +7,35 @@ public class Calc {
 
     public static int run(String exp) {
 
+        //괄호 제거
+        exp = stripOuterBrackets(exp);
+
         if (!exp.contains(" ")) {
             return Integer.parseInt(exp);
         }
 
-        // 뺄셈을 음수의 덧셈으로 변환
-        // 원래 +가 없었던 수식은 변환 후에도 더하기 연산 부분이 false로 판단됨
-        // 때문에 음수 변환을 연산자 체크 전 수행
-        exp = exp.replace("- ", "+ -");
-
-        boolean needToMulti = exp.contains("*");
-        boolean needToPlus = exp.contains("+");
-        boolean parentheses = exp.contains("( )");
-
-        if (parentheses) {
-            String[] bits = exp.split(" \\+ ");
-            int sum = 0;
-
-            for (int i = 0; i < i+1; i++) {
-                sum += Integer.parseInt(bits[i]);
-            }
-
-            return sum;
-        }
+        boolean needToMulti = exp.contains(" * ");
+        boolean needToPlus = exp.contains(" + ") || exp.contains(" - ");
 
         // 곱셈, 덧셈 모두 존재 시 복합 연산으로 판단
         boolean needToCompound = needToPlus && needToMulti;
+
+        // 뺄셈을 음수의 덧셈으로 변환
+        exp = exp.replace("- ", "+ -");
 
         // 복합 연산을 하는 경우, 더하기 기호로 수식 분리
         if (needToCompound) {
             String[] bits = exp.split(" \\+ ");
 
-////스트림 활용
-//            String newExp = Arrays.stream(bits)
-//                    .mapToInt(Calc::run)
-//                    .mapToObj(e -> e + "")
-//                    .collect(Collectors.joining(" + "));
+            String newExp = Arrays.stream(bits)
+                    .mapToInt(Calc::run)
+                    .mapToObj(e -> e + "")
+                    .collect(Collectors.joining(" + "));
 
-////1
-//            StringBuilder sb = new StringBuilder();
-//
-//            for (int i = 0; i < bits.length; i++) {
-//                int result = Calc.run(bits[i]);
-//                sb.append(result);
-//
-//                // 마지막 요소가 아니면 " + " 추가
-//                if (i < bits.length - 1) {
-//                    sb.append(" + ");
-//                }
-//            }
-//
-//            String newExp = sb.toString();
-
-//2
-            String newExp = "";
-
-            for (int i = 0; i < bits.length; i++) {
-                int result = Calc.run(bits[i]);
-                newExp += result;
-
-                if (i < bits.length - 1) {
-                    newExp += " + ";
-                }
-            }
-//
             return run(newExp);
-            // 재귀 호출로 계산
         }
 
+// 계산 로직
         if (needToPlus) {
             String[] bits = exp.split(" \\+ ");
             int sum = 0;
@@ -97,9 +58,15 @@ public class Calc {
 
             return sum;
         }
-
-
         throw new RuntimeException("해석 불가 : 올바른 계산식이 아님");
     }
 
+    //괄호 제거 함수 로직
+    private static String stripOuterBrackets(String exp) {
+        if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
+            exp = exp.substring(1, exp.length() - 1);
+        }
+        return exp;
+
+    }
 }
