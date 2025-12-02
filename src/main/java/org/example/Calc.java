@@ -63,10 +63,12 @@ public class Calc {
 
     //괄호 제거 함수 로직
     private static String stripOuterBrackets(String exp) {
-        if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
-            exp = exp.substring(1, exp.length() - 1);
+        for  (int i = 0; i < exp.length(); i++) {
+            if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
+                exp = exp.substring(1, exp.length() - 1);
+            }
+            //위 함수는 문자열 중 (와 )만 선택하여 제거 후 괄호 안 숫자만 리턴
         }
         return exp;
-
     }
 }
