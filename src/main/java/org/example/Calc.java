@@ -4,13 +4,22 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Calc {
+    public static boolean debug = true;
+    public static int runCallCount = 0;
 
     public static int run(String exp) {
+        runCallCount++;
 
         // 공백 제거
         exp = exp.trim();
         // 괄호 제거
         exp = stripOuterBrackets(exp);
+
+        // 디버그 플래그 세우기, 재귀 돌면서 실행 횟수 출력
+        if  (debug) {
+            System.out.printf("exp (%d) : %s\n", runCallCount, exp);
+        }
+
 
         // 그냥 숫자만 들어올 경우 바로 리턴
         if (!exp.contains(" ")) {
