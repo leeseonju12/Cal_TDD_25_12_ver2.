@@ -7,24 +7,48 @@ public class Calc {
 
     public static int run(String exp) {
 
-        //괄호 제거
+        // 괄호 제거
         exp = stripOuterBrackets(exp);
 
+        // 그냥 숫자만 들어올 경우 바로 리턴
         if (!exp.contains(" ")) {
             return Integer.parseInt(exp);
         }
 
         boolean needToMulti = exp.contains(" * ");
         boolean needToPlus = exp.contains(" + ") || exp.contains(" - ");
-
-        // 곱셈, 덧셈 모두 존재 시 복합 연산으로 판단
+        boolean needToSplit = exp.contains("(") || exp.contains(")");
         boolean needToCompound = needToPlus && needToMulti;
 
-        // 뺄셈을 음수의 덧셈으로 변환
+        // 뺼셈을 음수 더하기로 변환
         exp = exp.replace("- ", "+ -");
 
-        // 복합 연산을 하는 경우, 더하기 기호로 수식 분리
-        if (needToCompound) {
+        // 괄호 구분 후 자르기
+        if (needToSplit) {
+            int bracketsCount = 0;
+            int splitPointIndex = -1;
+
+            for (int i = 0; i < exp.length(); i++) {
+                if (exp.charAt(i) == '(') {
+                    bracketsCount++;
+                } else if (exp.charAt(i) == ')') {
+                    bracketsCount--;
+                }
+                if (bracketsCount == 0) {
+                    splitPointIndex = i;
+                    break;
+                }
+            }
+            String firstExp = exp.substring(0, splitPointIndex + 1);
+            String secondExp = exp.substring(splitPointIndex + 4);
+
+            char operator = exp.charAt(splitPointIndex + 2);
+
+            exp = Calc.run(firstExp) + " " + operator + " " + secondExp;
+
+            return Calc.run(exp);
+
+        } else if (needToCompound) {
             String[] bits = exp.split(" \\+ ");
 
             String newExp = Arrays.stream(bits)
@@ -35,7 +59,6 @@ public class Calc {
             return run(newExp);
         }
 
-// 계산 로직
         if (needToPlus) {
             String[] bits = exp.split(" \\+ ");
             int sum = 0;
@@ -46,7 +69,6 @@ public class Calc {
 
             return sum;
         }
-
         else if (needToMulti) {
             String[] bits = exp.split(" \\* ");
 
@@ -58,17 +80,23 @@ public class Calc {
 
             return sum;
         }
+
+
         throw new RuntimeException("해석 불가 : 올바른 계산식이 아님");
     }
 
-    //괄호 제거 함수 로직
     private static String stripOuterBrackets(String exp) {
-        for  (int i = 0; i < exp.length(); i++) {
-            if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
-                exp = exp.substring(1, exp.length() - 1);
-            }
-            //위 함수는 문자열 중 (와 )만 선택하여 제거 후 괄호 안 숫자만 리턴
+
+        int outerBracketsCount = 0;
+
+        while (exp.charAt(outerBracketsCount) == '(' && exp.charAt(exp.length() - 1 - outerBracketsCount) == ')') {
+            outerBracketsCount++;
         }
-        return exp;
+
+        if (outerBracketsCount == 0) return exp;
+
+        return exp.substring(outerBracketsCount, exp.length() - outerBracketsCount);
     }
+
+
 }
