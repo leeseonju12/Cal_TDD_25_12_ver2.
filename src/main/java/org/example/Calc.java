@@ -15,11 +15,15 @@ public class Calc {
         // 괄호 제거
         exp = stripOuterBrackets(exp);
 
+        // 만약 괄호 앞에 -가 붙으면
+        if (isCaseMinusBracket(exp)) {
+            exp = exp.substring(1) + " * -1";
+        }
+
         // 디버그 플래그 세우기, 재귀 돌면서 실행 횟수 출력
         if  (debug) {
             System.out.printf("exp (%d) : %s\n", runCallCount, exp);
         }
-
 
         // 그냥 숫자만 들어올 경우 바로 리턴
         if (!exp.contains(" ")) {
@@ -32,7 +36,7 @@ public class Calc {
         boolean needToCompound = needToPlus && needToMulti;
 
         // 뺼셈을 음수 더하기로 변환
-        exp = exp.replace("- ", "+ -");
+        exp = exp.replace("- " , "+ -");
 
         // 괄호 구분 후 자르기
         if (needToSplit) {
@@ -46,8 +50,8 @@ public class Calc {
             exp = Calc.run(firstExp) + " " + operator + " " + Calc.run(secondExp);
 
             return Calc.run(exp);
-
-        } else if (needToCompound) {
+        }
+        else if (needToCompound) {
             String[] bits = exp.split(" \\+ ");
 
             String newExp = Arrays.stream(bits)
@@ -82,6 +86,15 @@ public class Calc {
 
 
         throw new RuntimeException("해석 불가 : 올바른 계산식이 아님");
+    }
+
+    private static boolean isCaseMinusBracket(String exp) {
+        // -(로 시작하는지 판단
+        //if (exp.startsWith("-(") == false) return false;
+        // return true;
+
+        // -(가 아니면 false, 맞으면 true
+        return exp.startsWith("-(");
     }
 
     private static int findSplitPointIndex(String exp) {
