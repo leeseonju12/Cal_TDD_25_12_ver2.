@@ -8,6 +8,10 @@ public class Calc {
     public static int runCallCount = 0;
 
     public static int run(String exp) {
+        return _run(exp, 0);
+    }
+
+    public static int _run(String exp, int depth) {
         runCallCount++;
 
         // 공백 제거
@@ -25,6 +29,7 @@ public class Calc {
 
         // 디버그 플래그 세우기, 재귀 돌면서 실행 횟수 출력
         if  (debug) {
+            System.out.print(" ".repeat(depth * 2));
             System.out.printf("exp (%d) : %s\n", runCallCount, exp);
         }
 
@@ -43,6 +48,7 @@ public class Calc {
 
         // 괄호 구분 후 자르기
         if (needToSplit) {
+            exp = exp.replace("- ", "+ -");
             int splitPointIndex = findSplitPointIndex(exp);
 
             String firstExp = exp.substring(0, splitPointIndex);
@@ -50,9 +56,9 @@ public class Calc {
 
             char operator = exp.charAt(splitPointIndex);
 
-            exp = Calc.run(firstExp) + " " + operator + " " + Calc.run(secondExp);
+            exp = Calc._run(firstExp, depth + 1) + " " + operator + " " + Calc._run(secondExp, depth + 1);
 
-            return Calc.run(exp);
+            return Calc._run(exp, depth + 1);
         }
         else if (needToCompound) {
             String[] bits = exp.split(" \\+ ");
@@ -62,10 +68,11 @@ public class Calc {
                     .mapToObj(e -> e + "")
                     .collect(Collectors.joining(" + "));
 
-            return run(newExp);
+            return _run(newExp, depth + 1);
         }
 
         if (needToPlus) {
+            exp = exp.replace("- ", "+ -");
             String[] bits = exp.split(" \\+ ");
             int sum = 0;
 
